@@ -12,3 +12,53 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id Int @id @default(autoincrement())
+  email String
+  clerkId String
+
+  blasts Blast[]
+  sentMessages Message[]
+}
+
+model List {
+  id Int @id @default(autoincrement())
+  name String
+
+  blasts Blast[]
+  recipients Recipient[]
+}
+
+model Message {
+  id Int @id @default(autoincrement())
+  content String
+  timestamp DateTime
+
+  blast Blast @relation(fields: [blastId], references: [id])
+  blastId Int 
+  sender User @relation(fields: [senderId], references: [id])
+  senderId Int
+  recipient Recipient @relation(fields: [recipientId], references: [id])
+  recipientId Int
+}
+
+model Recipient {
+  id Int @id @default(autoincrement())
+  name String
+  email String
+  receivedMessages Message[]
+  lists List[]
+}
+
+model Blast {
+  id Int @id @default(autoincrement())
+  content String
+  timestamp DateTime
+  authorId Int
+
+  author User @relation(fields: [authorId], references: [id])
+  lists List[]
+  messages Message[]
+}
+
